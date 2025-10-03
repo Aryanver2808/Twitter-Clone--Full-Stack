@@ -6,9 +6,9 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-
 const router = express.Router();
 
+// Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = "uploads/";
@@ -22,11 +22,9 @@ const storage = multer.diskStorage({
     );
   },
 });
-
 const upload = multer({ storage });
 
-
-// ✅ Middleware to protect routes
+// Auth middleware
 const authMiddleware = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   if (!token) return res.status(401).json({ message: "No token provided" });
@@ -40,7 +38,7 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// ✅ Logged-in user
+// Logged-in user
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
@@ -50,7 +48,6 @@ router.get("/me", authMiddleware, async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // 👇 get posts
     const posts = await Post.find({ user: user._id })
       .sort({ createdAt: -1 })
       .select("_id text createdAt");
@@ -72,8 +69,8 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Public profile by username
-router.get("/:username", async (req, res) => {
+// Public profile by username
+router.get("/profile/:username", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username })
       .populate("followers", "username")
@@ -81,7 +78,6 @@ router.get("/:username", async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // 👇 get posts
     const posts = await Post.find({ user: user._id })
       .sort({ createdAt: -1 })
       .select("_id text createdAt");
@@ -102,6 +98,7 @@ router.get("/:username", async (req, res) => {
   }
 });
 
+// Update profile
 router.put(
   "/update",
   authMiddleware,
@@ -117,7 +114,6 @@ router.put(
       if (req.body.username) user.username = req.body.username;
       if (req.body.bio) user.bio = req.body.bio;
 
-      // ✅ Normalize paths to use forward slashes
       if (req.files.avatar) {
         user.avatar = "/" + req.files.avatar[0].path.replace(/\\/g, "/");
       }
@@ -126,7 +122,6 @@ router.put(
       }
 
       await user.save();
-
       res.json({ success: true, user });
     } catch (err) {
       console.error(err);
@@ -134,6 +129,5 @@ router.put(
     }
   }
 );
-
 
 export default router;

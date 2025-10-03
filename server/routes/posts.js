@@ -86,7 +86,7 @@ router.get("/", async (req, res) => {
 
 
 // ✅ Get all posts by username
-router.get("/:username", async (req, res) => {
+router.get("/user/:username", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username });
     if (!user) return res.status(404).json({ message: "User not found" });
