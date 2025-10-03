@@ -1,12 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import EditProfileModal from "./EditProfileModal";
 
-type Post = {
-  _id: string;
-  text: string;
-  createdAt?: string;
-};
-
+type Post = { _id: string; text: string; createdAt?: string };
 type UserData = {
   id?: string;
   name?: string;
@@ -19,42 +15,41 @@ type UserData = {
   followers?: number;
 };
 
-const ProfilePage = () => {
+type ProfilePageProps = {
+  user: UserData | null;
+  setUser: (user: UserData | null) => void;
+};
+
+const SERVER_URL = "http://localhost:5000"; // adjust your backend URL
+
+const ProfilePage = ({ user, setUser }: ProfilePageProps) => {
   const { username } = useParams();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchUserAndPosts = async () => {
       try {
-        let url = username
-          ? `http://localhost:5000/api/users/${username}`
-          : `http://localhost:5000/api/users/me`;
+        const url =
+          username && username !== "me"
+            ? `${SERVER_URL}/api/users/${username}`
+            : `${SERVER_URL}/api/users/me`;
 
-        // ✅ fetch user
         const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
         const data = await res.json();
 
-        if (!res.ok) {
-          if (res.status === 401) throw new Error("Unauthorized – please log in again");
-          if (res.status === 404) throw new Error("User not found");
-          throw new Error(data.message || "Failed to fetch user");
-        }
+        if (!res.ok) throw new Error(data.message || "Failed to fetch user");
 
         setUserData(data);
 
-        // ✅ fetch posts separately
-        const postsRes = await fetch(
-          `http://localhost:5000/api/posts/${data.username}`
-        );
+        // fetch posts
+        const postsRes = await fetch(`${SERVER_URL}/api/posts/${data.username}`);
         const postsData = await postsRes.json();
         setPosts(postsData);
       } catch (err: any) {
@@ -69,17 +64,12 @@ const ProfilePage = () => {
     fetchUserAndPosts();
   }, [username]);
 
-  if (loading) {
-    return <div className="text-white p-4">Loading profile...</div>;
-  }
+  if (loading) return <div className="text-white p-4">Loading profile...</div>;
+  if (error) return <div className="text-red-500 p-4">{error}</div>;
+  if (!userData) return <div className="text-red-500 p-4">User not found</div>;
 
-  if (error) {
-    return <div className="text-red-500 p-4">{error}</div>;
-  }
-
-  if (!userData) {
-    return <div className="text-red-500 p-4">User not found</div>;
-  }
+  // helper to fix URL
+  const getImageUrl = (path?: string) => (path ? (path.startsWith("http") ? path : SERVER_URL + path) : "");
 
   return (
     <div className="text-white">
@@ -89,26 +79,51 @@ const ProfilePage = () => {
         <p className="text-gray-400">@{userData.username}</p>
       </div>
 
-      {/* Cover + Profile Image */}
+      {/* Banner + Avatar */}
       <div className="relative">
         <div className="h-40 bg-gray-800">
           {userData.banner && (
-            <img
-              src={userData.banner}
-              alt="Banner"
-              className="w-full h-40 object-cover"
-            />
+            <img src={getImageUrl(userData.banner)} alt="Banner" className="w-full h-40 object-cover" />
           )}
         </div>
+
         <img
-          className="w-24 h-24 rounded-full border-4 border-black absolute left-4 -bottom-12"
-          src={userData.avatar || "https://via.placeholder.com/150"}
+          className="w-32 h-32 rounded-full border-4 border-black absolute left-4 -bottom-14 object-cover"
+          src={getImageUrl(userData.avatar) || "https://via.placeholder.com/150"}
           alt="Profile"
         />
+
+        {/* Edit Profile Button */}
+        {user && user.username === userData.username && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="absolute right-4 px-4 py-1.5 bg-black text-white rounded-2xl border-1 border-gray-700 mt-4 font-medium hover:bg-neutral-900"
+          >
+            Edit Profile
+          </button>
+        )}
       </div>
+
+      {isEditing && userData && (
+        <EditProfileModal
+          user={userData}
+          onClose={() => setIsEditing(false)}
+          setUserData={(updatedUser: UserData) => {
+            setUserData(updatedUser);
+            setUser(updatedUser);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+          }}
+          setUser={setUser}
+        />
+      )}
 
       {/* Bio + Stats */}
       <div className="p-4 mt-12">
+         <div className="flex items-center gap-6">
+         <h2 className="text-xl font-bold">{userData.name || userData.username}</h2>
+         <button className="px-4  bg-black text-white rounded-2xl border-1 border-gray-700  font-medium hover:bg-neutral-900">get verified</button>
+         </div>
+        <p className="text-gray-400">@{userData.username}</p>
         <p>{userData.bio || "No bio yet."}</p>
         <p className="text-gray-400 mt-2">
           Joined {userData.joined ? new Date(userData.joined).toDateString() : "N/A"}
@@ -127,16 +142,9 @@ const ProfilePage = () => {
       <div className="border-t border-gray-700">
         {posts.length > 0 ? (
           posts.map((post) => (
-            <div
-              key={post._id}
-              className="p-4 border-b border-gray-700 hover:bg-gray-900"
-            >
+            <div key={post._id} className="p-4 border-b border-gray-700 hover:bg-gray-900">
               <p>{post.text}</p>
-              {post.createdAt && (
-                <p className="text-xs text-gray-500">
-                  {new Date(post.createdAt).toLocaleString()}
-                </p>
-              )}
+              {post.createdAt && <p className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleString()}</p>}
             </div>
           ))
         ) : (

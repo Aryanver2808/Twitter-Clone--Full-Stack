@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
-const SERVER_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
+const SERVER_URL = "http://localhost:5000";
 
 const EditProfileModal = ({ user, onClose, setUserData, setUser }) => {
   const [username, setUsername] = useState(user.username);
@@ -55,8 +54,7 @@ const EditProfileModal = ({ user, onClose, setUserData, setUser }) => {
 
       alert("Profile updated successfully!");
       setUserData(data.user);
-      if (setUser) setUser(data.user); 
-localStorage.setItem("user", JSON.stringify(data.user)); 
+      setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
       onClose();
     } catch (err) {
@@ -65,11 +63,13 @@ localStorage.setItem("user", JSON.stringify(data.user));
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-start pt-20 z-50">
-      <div className="bg-gray-900 w-[600px] rounded-xl shadow-xl relative">
+    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex justify-center items-start pt-10 z-50">
+      <div className="bg-black w-[600px] rounded-xl shadow-xl relative">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <button onClick={onClose} className="text-white font-bold text-xl hover:bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center">×</button>
-          <button onClick={handleSave} className="px-4 py-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full">Save</button>
+          <div className="flex items-center gap-4"><button onClick={onClose} className="text-white font-semibold text-2xl hover:bg-neutral-900 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">×</button>
+          <h2 className="font-bold text-xl mt-2">Edit Profile</h2>
+          </div>
+          <button onClick={handleSave} className="px-4 py-1 bg-white hover:bg-gray-200 text-black font-semibold rounded-full cursor-pointer">Save</button>
         </div>
 
         <div className="relative h-40 bg-gray-800">
@@ -82,7 +82,7 @@ localStorage.setItem("user", JSON.stringify(data.user));
 
         <div className="relative px-4 -mt-12 mb-4">
           <div className="relative w-28 h-28">
-            <img src={avatarPreview || "https://via.placeholder.com/150"} alt="Avatar" className="w-28 h-28 rounded-full border-4 border-gray-900 object-cover" />
+            <img src={avatarPreview || "https://via.placeholder.com/150"} alt="Avatar" className="w-28 h-28 rounded-full border-4 border-black object-cover" />
             <label className="absolute bottom-0 right-0 bg-black/50 text-white rounded-full p-1 cursor-pointer hover:bg-black/70">
               <input type="file" className="hidden" onChange={handleAvatarChange} />
               ✎
@@ -92,9 +92,9 @@ localStorage.setItem("user", JSON.stringify(data.user));
 
         <div className="px-4 pb-4">
           <label className="block text-gray-400 text-sm mb-1">Username</label>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-2 rounded bg-gray-800 text-white mb-4" />
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-2 rounded bg-black text-white mb-4 border border-gray-700" />
           <label className="block text-gray-400 text-sm mb-1">Bio</label>
-          <textarea value={bio} onChange={(e) => setBio(e.target.value)} className="w-full p-2 rounded bg-gray-800 text-white mb-2" rows={3} />
+          <textarea value={bio} onChange={(e) => setBio(e.target.value)} className="w-full p-2 rounded bg-black text-white mb-2 border border-gray-700" rows={3} />
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ import Feed from "./pages/feed/Feed";
 import ProfilePage from "./pages/profile/ProfilePage";
 import NotificationPage from "./pages/notification/NotificationPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
-
+import ListOption from "./pages/lists/ListOption";
 
 // ✅ GuestRoute prevents logged-in users from seeing login/signup
 const GuestRoute = ({ children }) => {
@@ -63,15 +63,16 @@ function App() {
   path="/home"
   element={
     <ProtectedRoute>
-      <HomePage user={user} handleLogout={handleLogout} />
+      <HomePage user={user} handleLogout={handleLogout} setUser={setUser} />
     </ProtectedRoute>
   }
 >
-  <Route index element={<Feed user={user} />} />
-  <Route path="feed" element={<Feed user={user} />} />
-  <Route path="profile" element={<ProfilePage user={user} />} />
-  <Route path="profile/:username" element={<ProfilePage user={user} />} />
+ <Route index element={<Feed user={user} userEmail={user?.email} />} />
+<Route path="feed" element={<Feed user={user} userEmail={user?.email} />} />
+  <Route path="profile" element={<ProfilePage user={user}  setUser={setUser} />} />
+  <Route path="profile/:username" element={<ProfilePage user={user}  setUser={setUser} />} />
   <Route path="notification" element={<NotificationPage user={user} />} />
+ 
 </Route>
 
       </Routes>
