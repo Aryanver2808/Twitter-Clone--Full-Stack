@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EditProfileModal from "./EditProfileModal";
 
+
+const API_URL = import.meta.env.VITE_API_URL;
 type Post = { _id: string; text: string; createdAt?: string };
 type UserData = {
   id?: string;
@@ -20,7 +22,7 @@ type ProfilePageProps = {
   setUser: (user: UserData | null) => void;
 };
 
-const SERVER_URL = "http://localhost:5000"; // adjust your backend URL
+
 
 const ProfilePage = ({ user, setUser }: ProfilePageProps) => {
   const { username } = useParams();
@@ -35,8 +37,8 @@ const ProfilePage = ({ user, setUser }: ProfilePageProps) => {
       try {
         const url =
           username && username !== "me"
-            ? `${SERVER_URL}/api/users/${username}`
-            : `${SERVER_URL}/api/users/me`;
+            ? `${API_URL}/api/users/profile/${username}`
+            : `${API_URL}/api/users/me`;
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -49,7 +51,7 @@ const ProfilePage = ({ user, setUser }: ProfilePageProps) => {
         setUserData(data);
 
         // fetch posts
-        const postsRes = await fetch(`${SERVER_URL}/api/posts/${data.username}`);
+        const postsRes = await fetch(`${API_URL}/api/posts/user/${data.username}`);
         const postsData = await postsRes.json();
         setPosts(postsData);
       } catch (err: any) {
@@ -69,7 +71,7 @@ const ProfilePage = ({ user, setUser }: ProfilePageProps) => {
   if (!userData) return <div className="text-red-500 p-4">User not found</div>;
 
   // helper to fix URL
-  const getImageUrl = (path?: string) => (path ? (path.startsWith("http") ? path : SERVER_URL + path) : "");
+  const getImageUrl = (path?: string) => (path ? (path.startsWith("http") ? path : API_URL + path) : "");
 
   return (
     <div className="text-white">

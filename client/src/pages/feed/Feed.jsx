@@ -8,6 +8,7 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import MicIcon from "@mui/icons-material/Mic";
 
+const API_URL = import.meta.env.VITE_API_URL;
 // Hardcoded example tweets
 const exampleTweets = [
 {
@@ -168,7 +169,7 @@ export default function Feed({ userEmail, user }) {
   };
 
   const sendOtp = async () => {
-    await fetch("http://localhost:5000/api/audio/send-otp", {
+    await fetch(`${API_URL}/api/audio/send-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: userEmail }),
@@ -178,7 +179,7 @@ export default function Feed({ userEmail, user }) {
   };
 
   const verifyOtp = async () => {
-    const res = await fetch("http://localhost:5000/api/audio/verify-otp", {
+    const res = await fetch(`${API_URL}/api/audio/verify-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: userEmail, otp: otpInput }),
@@ -201,7 +202,7 @@ export default function Feed({ userEmail, user }) {
     if (audioBlob) formData.append("audio", audioBlob);
 
     try {
-      const res = await fetch("http://localhost:5000/api/posts", {
+      const res = await fetch(`${API_URL}/api/posts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -221,11 +222,11 @@ export default function Feed({ userEmail, user }) {
         name: user.username || "Guest",
         username: `@${user.username}`,
         avatar: user.avatar?.startsWith("/")
-          ? `http://localhost:5000${user.avatar.replace(/\\/g, "/")}`
+          ? `${API_URL}${user.avatar.replace(/\\/g, "/")}`
           : user.avatar,
         content: savedTweet.text,
-        image: savedTweet.image ? `http://localhost:5000${savedTweet.image}` : null,
-        audio: savedTweet.audio ? `http://localhost:5000${savedTweet.audio}` : null,
+        image: savedTweet.image ? `${API_URL}${savedTweet.image}` : null,
+        audio: savedTweet.audio ? `${API_URL}${savedTweet.audio}` : null,
         likes: savedTweet.likes?.length || 0,
         comments: savedTweet.comments?.length || 0,
         createdAt: new Date(savedTweet.createdAt).toLocaleString(),
@@ -248,7 +249,7 @@ export default function Feed({ userEmail, user }) {
   useEffect(() => {
     const fetchTweets = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/posts", {
+        const res = await fetch(`${API_URL}/api/posts`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await res.json();
@@ -259,12 +260,12 @@ export default function Feed({ userEmail, user }) {
           username: `@${post.user?.username || "guest"}`,
           avatar: post.user?.avatar
             ? post.user.avatar.startsWith("/")
-              ? `http://localhost:5000${post.user.avatar}`
+              ? `${API_URL}${post.user.avatar}`
               : post.user.avatar
             : "https://via.placeholder.com/150",
           content: post.text,
-          image: post.image ? `http://localhost:5000${post.image}` : null,
-          audio: post.audio ? `http://localhost:5000${post.audio}` : null,
+          image: post.image ? `${API_URL}${post.image}` : null,
+          audio: post.audio ? `${API_URL}${post.audio}` : null,
           likes: post.likes || 0,
           comments: post.comments || 0,
           createdAt: new Date(post.createdAt).toLocaleString(),
@@ -298,7 +299,7 @@ export default function Feed({ userEmail, user }) {
         <Avatar
           src={
             user?.avatar
-              ? `http://localhost:5000${user.avatar.replace(/\\/g, "/")}`
+              ? `${API_URL}${user.avatar.replace(/\\/g, "/")}`
               : "https://via.placeholder.com/150"
           }
         />

@@ -22,10 +22,11 @@ import {
 import { FaXTwitter } from "react-icons/fa6";
 import featherIcon from "../assets/feather.png";
 import { Avatar, Menu, MenuItem } from "@mui/material";
-import { FaC } from "react-icons/fa6";
 
-// ✅ SidebarOption (single icon button)
+const API_URL = import.meta.env.VITE_API_URL;
+
 const SidebarOption = ({ Icon, active, onClick }) => {
+  
   return (
     <div
       onClick={onClick}
@@ -140,6 +141,7 @@ const Sidebar = ({ handlelogout, user }) => {
            <MenuItem  onClick={() => setAnchorElMore(null)} sx={{  fontSize: "1.2rem",fontWeight: "bold",my: 1,px: 3, "&:hover": { bgcolor: "#1a1a1a",fontSize: "1.1rem", gap: "4px" } }}>
           <FaCog className="mr-2"/> Settings and Privacy</MenuItem>
 
+          
         </Menu>
 
         {/* Feather */}
@@ -153,7 +155,7 @@ const Sidebar = ({ handlelogout, user }) => {
         <Avatar
           src={
             user?.avatar
-              ? `http://localhost:5000${user.avatar.replace(/\\/g, "/")}`
+              ? `${API_URL}${user.avatar.replace(/\\/g, "/")}`
               : "https://via.placeholder.com/150"
           }
           onClick={handleClick}

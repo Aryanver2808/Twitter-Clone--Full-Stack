@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import { FaXTwitter } from "react-icons/fa6";
 import { motion, useAnimation } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
+const API_URL = import.meta.env.VITE_API_URL;
 export default function Login() {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const [theme] = useState("black"); 
+  const [theme] = useState("black");
   const navigate = useNavigate();
-  // Animation controls
+
   const controls = useAnimation();
 
   useEffect(() => {
-    // Start floating animation
+
     controls.start({
       y: [0, -20, 0],
       transition: {
@@ -23,7 +24,7 @@ export default function Login() {
       },
     });
 
-    // Trigger rotation after 5 seconds
+
     const timer = setTimeout(() => {
       controls.start({
         rotateY: [0, 360],
@@ -37,36 +38,36 @@ export default function Login() {
     return () => clearTimeout(timer);
   }, [controls]);
 
- const handleLogin = async (e) => {
-  e.preventDefault(); // prevent page refresh
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      
-      localStorage.setItem("token", data.token);
+      if (res.ok) {
 
-      
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+
+
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        navigate("/home/profile", { replace: true });
+      } else {
+        alert("❌ Error: " + data.message);
       }
-
-      navigate("/home/profile", { replace: true });
-    } else {
-      alert("❌ Error: " + data.message);
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Something went wrong. Check backend.");
     }
-  } catch (err) {
-    console.error("Login failed:", err);
-    alert("Something went wrong. Check backend.");
-  }
-};
+  };
 
 
 

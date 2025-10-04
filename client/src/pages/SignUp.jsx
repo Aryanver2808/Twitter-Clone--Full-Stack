@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { FaXTwitter } from "react-icons/fa6";
 import { motion, useAnimation } from "framer-motion";
-
+const API_URL = import.meta.env.VITE_API_URL;
 export default function Signup() {
+  
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
-  // Animation controls
+
   const controls = useAnimation();
 
   useEffect(() => {
-    // Start floating animation
+    
     controls.start({
       y: [0, -20, 0],
       transition: {
@@ -22,7 +23,6 @@ export default function Signup() {
       },
     });
 
-    // Trigger rotation after 5 seconds
     const timer = setTimeout(() => {
       controls.start({
         rotateY: [0, 360],
@@ -37,9 +37,9 @@ export default function Signup() {
   }, [controls]);
 
  const handleSignup = async (e) => {
-  e.preventDefault(); // prevent page refresh
+  e.preventDefault();
   try {
-    const res = await fetch("http://localhost:5000/api/auth/signup", {
+    const res = await fetch(`${API_URL}/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password }),
@@ -49,7 +49,7 @@ export default function Signup() {
     if (res.ok) {
       alert("✅ Signup successful!");
       console.log(data);
-      // optional: redirect to login
+     
       window.location.href = "/login";
     } else {
       alert("❌ Error: " + data.message);

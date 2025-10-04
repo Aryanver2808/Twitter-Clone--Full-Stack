@@ -29,10 +29,11 @@ export default function RightSidebar() {
   ];
 
   return (
-    <section className="w-full hidden  mt-2 xl:flex flex-col px-2 relative ">
+    <section className="w-full hidden  mt-2 xl:flex flex-col px-2 ">
       {/* Sticky Search Bar */}
-      <div className="  bg-black/70  backdrop-blur-md pb-1 z-10">
-        <div className="sticky top-2 flex items-center bg-black rounded-full px-3 py-3 border border-gray-700">
+      <div className="sticky top-0 ">
+      <div className="  bg-black/70 backdrop-blur-md pb-1 z-10 ">
+        <div className="sticky top-0 flex items-center bg-black rounded-full px-3 py-3 border border-gray-700">
           <Search className="text-gray-500 w-5 h-5" />
           <input
             type="text"
@@ -43,7 +44,7 @@ export default function RightSidebar() {
       </div>
 
       {/* Normal scrolling content */}
-      <div className="space-y-4 mt-4 sticky">
+      <div className="space-y-4 mt-4 sticky top-0 min-h-screen overflow-y-auto ">
         {/* Trends Section */}
         <div className="bg-black rounded-2xl px-4 py-3 border border-gray-700">
           <h2 className="font-bold text-lg mb-3">What’s happening</h2>
@@ -61,7 +62,7 @@ export default function RightSidebar() {
         </div>
 
         {/* Who to follow */}
-        <div className="bg-black rounded-2xl px-4 py-3 border border-gray-700">
+        <div className="bg-black rounded-2xl px-4 py-3 border border-gray-700 ">
           <h2 className="font-bold text-lg mb-3">Who to follow</h2>
           {suggestions.map((user) => (
             <div
@@ -84,15 +85,16 @@ export default function RightSidebar() {
         </div>
 
         {/* Footer */}
-        <div className="text-xs text-gray-500 flex flex-wrap gap-x-2 gap-y-1 leading-relaxed">
+        <div className="text-xs text-gray-500 flex flex-wrap gap-x-2 gap-y-1 leading-relaxed ">
           <span className="hover:underline cursor-pointer">Terms of Service</span>
           <span className="hover:underline cursor-pointer">Privacy Policy</span>
           <span className="hover:underline cursor-pointer">Cookie Policy</span>
           <span className="hover:underline cursor-pointer">Accessibility</span>
           <span className="hover:underline cursor-pointer">Ads info</span>
           <span className="hover:underline cursor-pointer">More…</span>
-          <span>© 2025 X Corp.</span>
+          <span className="sticky top-1">© 2025 X Corp.</span>
         </div>
+      </div>
       </div>
     </section>
   );

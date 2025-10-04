@@ -16,12 +16,15 @@ const HomePage = ({ user, handleLogout }) => {
     {/* Feed */}
     <main className="w-[600px] border-r border-gray-700">
       <Outlet />
+      
     </main>
-
-    {/* Right Sidebar */}
-    <aside className="hidden xl:flex w-[350px]">
+    
+      <aside className="hidden xl:flex w-[350px] ">
             <RightSidebar />
         </aside>
+    
+    
+    
   </div>
 </div>
 

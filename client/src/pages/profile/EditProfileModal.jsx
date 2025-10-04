@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
-const SERVER_URL = "http://localhost:5000";
+const SERVER_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const EditProfileModal = ({ user, onClose, setUserData, setUser }) => {
   const [username, setUsername] = useState(user.username);
@@ -8,10 +9,10 @@ const EditProfileModal = ({ user, onClose, setUserData, setUser }) => {
   const [avatar, setAvatar] = useState(null);
   const [banner, setBanner] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(
-    user.avatar ? (user.avatar.startsWith("http") ? user.avatar : SERVER_URL + user.avatar) : ""
+    user.avatar ? (user.avatar.startsWith("http") ? user.avatar : API_URL + user.avatar) : ""
   );
   const [bannerPreview, setBannerPreview] = useState(
-    user.banner ? (user.banner.startsWith("http") ? user.banner : SERVER_URL + user.banner) : ""
+    user.banner ? (user.banner.startsWith("http") ? user.banner : API_URL + user.banner) : ""
   );
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const EditProfileModal = ({ user, onClose, setUserData, setUser }) => {
       if (avatar) formData.append("avatar", avatar);
       if (banner) formData.append("banner", banner);
 
-      const res = await fetch(`${SERVER_URL}/api/users/update`, {
+      const res = await fetch(`${API_URL}/api/users/update`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token") || ""}` },
         body: formData,
