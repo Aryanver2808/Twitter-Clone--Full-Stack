@@ -10,7 +10,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://YOUR_BACKEND_URL/api/$1"
+      "dest": "https://twitter-clone-full-stack-1-2guu.onrender.com/api/$1"
     },
     {
       "src": "/(.*)",
